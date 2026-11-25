@@ -5,7 +5,7 @@
  * requests to other origins, so nothing from Supabase (your data) is ever cached
  * here; offline data lives in the app's own encrypted-sync store.
  */
-const CACHE = 'beecastle-shell-v1';
+const CACHE = 'beecastle-shell-v2';
 const SHELL = ['./', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {
@@ -26,6 +26,8 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
+  // Android releases and their latest.json change in place: always from the network.
+  if (url.pathname.startsWith('/apps/')) return;
 
   if (request.mode === 'navigate') {
     // Pages: network first so updates arrive; the cached shell when offline.
